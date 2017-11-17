@@ -124,27 +124,36 @@ class SocketConnection implements Runnable
             			String username = words[1];
             			Integer pin = Integer.valueOf(words[2]);
             			String token = this.db.Login(username, pin);  //generate token from DB
-            			response.print("token=" + token);       //send token to user
+            			response.println("token=" + token);       //send token to user
             		} else if (message.startsWith("logout")) {	//	logout;token
             			System.out.println("logging out...");
             			String token = words[1];         //get the token from the array string
             			this.db.Logout(token);
-            			response.print("token=" + token);
+            			response.println("token=" + token);
             		} else if (message.startsWith("deposit")) {	//	deposit;token;amount
             			System.out.println("deposit...");
             			String token = words[1];
             			Double amount = Double.valueOf(words[2]);
-            			this.db.Deposit(token, amount);            			
+            			this.db.Deposit(token, amount);
+            			Double balance = this.db.Balance(token);
+            			// return the new balance
+            			response.println("Your new balance is:" + balance);   			
             		} else if (message.startsWith("withdraw")) {  //	withdraw;token;amount
             			System.out.println("withdraw...");
             			String token = words[1];
             			Double amount = Double.valueOf(words[2]);
-            			this.db.Withdraw(token, amount);            			
+            			boolean answ = this.db.Withdraw(token, amount);
+            			if(answ != false) {
+            			Double balance = this.db.Balance(token);
+            			// return success|failure and the new balance
+            			response.println("The withdrw was a succes! The new balance is:" + balance);
+            			}
+            			else
+            				response.println("Not enough money!");            			
             		} else if (message.startsWith("balance")) {    // balance;token
             			String token = words[1];
-            			this.db.Balance(token);
-            			System.out.println("balance... ");
-            			
+            			Double balance = this.db.Balance(token);
+            			response.println("The balance is:" + balance);   // return the balance      			
             		}
             }
             
